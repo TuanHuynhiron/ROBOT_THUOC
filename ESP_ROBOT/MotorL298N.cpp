@@ -1,70 +1,66 @@
 #include "MotorL298N.h"
 
-MotorL298N::MotorL298N(uint8_t pwmL, uint8_t pwmR, ShiftRegister16& sr) 
+// Constructor gán chính xác kiểu ShiftRegister595
+MotorL298N::MotorL298N(uint8_t pwmL, uint8_t pwmR, ShiftRegister595& sr)
     : pwmLeftPin(pwmL), pwmRightPin(pwmR), shiftReg(sr) {}
 
 void MotorL298N::begin() {
-    ledcAttach(pwmLeftPin, 5000, 8);  // Tần số 5kHz, độ phân giải 8-bit (0-255)
-    ledcAttach(pwmRightPin, 5000, 8);
+    pinMode(pwmLeftPin, OUTPUT);
+    pinMode(pwmRightPin, OUTPUT);
     stop();
 }
 
-// Đi thẳng (Cả 2 bánh cùng tiến)
 void MotorL298N::moveForward(uint8_t speedL, uint8_t speedR) {
-    shiftReg.setPin(IN1_BIT, true);
-    shiftReg.setPin(IN2_BIT, false);
-    shiftReg.setPin(IN3_BIT, true);
-    shiftReg.setPin(IN4_BIT, false);
+    shiftReg.setPin(IN1_BIT, HIGH);
+    shiftReg.setPin(IN2_BIT, LOW);
+    shiftReg.setPin(IN3_BIT, HIGH);
+    shiftReg.setPin(IN4_BIT, LOW);
     shiftReg.write();
 
-    ledcWrite(pwmLeftPin, speedL);
-    ledcWrite(pwmRightPin, speedR);
+    analogWrite(pwmLeftPin, speedL);
+    analogWrite(pwmRightPin, speedR);
 }
 
-// Đi lùi (Cả 2 bánh cùng lùi)
 void MotorL298N::moveBackward(uint8_t speedL, uint8_t speedR) {
-    shiftReg.setPin(IN1_BIT, false);
-    shiftReg.setPin(IN2_BIT, true);
-    shiftReg.setPin(IN3_BIT, false);
-    shiftReg.setPin(IN4_BIT, true);
+    shiftReg.setPin(IN1_BIT, LOW);
+    shiftReg.setPin(IN2_BIT, HIGH);
+    shiftReg.setPin(IN3_BIT, LOW);
+    shiftReg.setPin(IN4_BIT, HIGH);
     shiftReg.write();
 
-    ledcWrite(pwmLeftPin, speedL);
-    ledcWrite(pwmRightPin, speedR);
+    analogWrite(pwmLeftPin, speedL);
+    analogWrite(pwmRightPin, speedR);
 }
 
-// Rẽ trái (Bánh trái lùi/dừng, bánh phải tiến)
 void MotorL298N::turnLeft(uint8_t speedL, uint8_t speedR) {
-    shiftReg.setPin(IN1_BIT, false);
-    shiftReg.setPin(IN2_BIT, true);  // Bánh trái lùi
-    shiftReg.setPin(IN3_BIT, true);  // Bánh phải tiến
-    shiftReg.setPin(IN4_BIT, false);
+    shiftReg.setPin(IN1_BIT, LOW);
+    shiftReg.setPin(IN2_BIT, HIGH);
+    shiftReg.setPin(IN3_BIT, HIGH);
+    shiftReg.setPin(IN4_BIT, LOW);
     shiftReg.write();
 
-    ledcWrite(pwmLeftPin, speedL);
-    ledcWrite(pwmRightPin, speedR);
+    analogWrite(pwmLeftPin, speedL);
+    analogWrite(pwmRightPin, speedR);
 }
 
-// Rẽ phải (Bánh trái tiến, bánh phải lùi/dừng)
 void MotorL298N::turnRight(uint8_t speedL, uint8_t speedR) {
-    shiftReg.setPin(IN1_BIT, true);   // Bánh trái tiến
-    shiftReg.setPin(IN2_BIT, false);
-    shiftReg.setPin(IN3_BIT, false);
-    shiftReg.setPin(IN4_BIT, true);  // Bánh phải lùi
+    shiftReg.setPin(IN1_BIT, HIGH);
+    shiftReg.setPin(IN2_BIT, LOW);
+    shiftReg.setPin(IN3_BIT, LOW);
+    shiftReg.setPin(IN4_BIT, HIGH);
     shiftReg.write();
 
-    ledcWrite(pwmLeftPin, speedL);
-    ledcWrite(pwmRightPin, speedR);
+    analogWrite(pwmLeftPin, speedL);
+    analogWrite(pwmRightPin, speedR);
 }
 
-// Dừng robot
 void MotorL298N::stop() {
-    shiftReg.setPin(IN1_BIT, false);
-    shiftReg.setPin(IN2_BIT, false);
-    shiftReg.setPin(IN3_BIT, false);
-    shiftReg.setPin(IN4_BIT, false);
+    shiftReg.setPin(IN1_BIT, LOW);
+    shiftReg.setPin(IN2_BIT, LOW);
+    shiftReg.setPin(IN3_BIT, LOW);
+    shiftReg.setPin(IN4_BIT, LOW);
     shiftReg.write();
 
-    ledcWrite(pwmLeftPin, 0);
-    ledcWrite(pwmRightPin, 0);
+    analogWrite(pwmLeftPin, 0);
+    analogWrite(pwmRightPin, 0);
 }
