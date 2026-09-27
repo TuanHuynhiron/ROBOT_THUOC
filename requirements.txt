@@ -1,9 +1,0 @@
-Flask
-Flask-SocketIO
-ultralytics
-opencv-python-headless
-numpy
-torch
-torchvision
-gunicorn
-eventlet
